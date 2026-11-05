@@ -1,0 +1,18 @@
+{
+  "name": "GTok Repo",
+  "identifier": "com.hieu280365.repo",
+  "apps": [
+    {
+      "name": "TikTok Mod",
+      "bundleIdentifier": "com.zhiliaoapp.musically",
+      "developerName": "Hieu",
+      "version": "2.5",
+      "versionDate": "2026-11-05T00:00:00Z",
+      "downloadURL": "https://github.com/hieu280365-arch/Gtok-2.5/releases/download/v2.5/gtok.2.5.ipa",
+      "localizedDescription": "Bản mod GTok 2.5",
+      "iconURL": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+      "tintColor": "000000",
+      "size": 458117000
+    }
+  ]
+}
