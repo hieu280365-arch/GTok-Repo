@@ -1,0 +1,35 @@
+name: Auto Update SideStore Repo
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Parse Release & Update apps.json
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          DATE="${{ github.event.release.published_at }}"
+          URL="${{ github.event.release.assets[0].browser_download_url }}"
+          SIZE="${{ github.event.release.assets[0].size }}"
+
+          # Cap nhat thong so vao file apps.json
+          jq --arg ver "$VERSION" \
+             --arg date "$DATE" \
+             --arg url "$URL" \
+             --argjson size "$SIZE" \
+             '.apps[0].version = $ver | .apps[0].versionDate = $date | .apps[0].downloadURL = $url | .apps[0].size = $size' \
+             apps.json > temp.json && mv temp.json apps.json
+
+      - name: Push Thay Doi
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps.json
+          git commit -m "Auto update apps.json for $VERSION" || exit 0
+          git push
