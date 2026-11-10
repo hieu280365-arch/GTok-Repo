@@ -1,6 +1,7 @@
 name: Auto Update SideStore Repo
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
@@ -9,14 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Parse Release & Update apps.json
+      - name: Get Latest Release and Update apps.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION="${{ github.event.release.tag_name }}"
-          DATE="${{ github.event.release.published_at }}"
-          URL="${{ github.event.release.assets[0].browser_download_url }}"
-          SIZE="${{ github.event.release.assets[0].size }}"
+          # Lay thong tin ban release moi nhat tu GitHub API
+          RELEASE_JSON=$(gh api repos/${{ github.repository }}/releases/latest)
+          
+          VERSION=$(echo "$RELEASE_JSON" | jq -r '.tag_name')
+          DATE=$(echo "$RELEASE_JSON" | jq -r '.published_at')
+          URL=$(echo "$RELEASE_JSON" | jq -r '.assets[0].browser_download_url')
+          SIZE=$(echo "$RELEASE_JSON" | jq -r '.assets[0].size')
+
+          # Kiem tra neu khong tim thay file ipa thi bao loi
+          if [ "$URL" = "null" ] || [ -z "$URL" ]; then
+            echo "Khong tim thay asset file trong release moi nhat!"
+            exit 1
+          fi
 
           # Cap nhat thong so vao file apps.json
           jq --arg ver "$VERSION" \
@@ -26,10 +38,10 @@ jobs:
              '.apps[0].version = $ver | .apps[0].versionDate = $date | .apps[0].downloadURL = $url | .apps[0].size = $size' \
              apps.json > temp.json && mv temp.json apps.json
 
-      - name: Push Thay Doi
+      - name: Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add apps.json
-          git commit -m "Auto update apps.json for $VERSION" || exit 0
+          git commit -m "Auto update apps.json for latest release" || exit 0
           git push
