@@ -16,21 +16,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Lay thong tin ban release moi nhat tu GitHub API
-          RELEASE_JSON=$(gh api repos/${{ github.repository }}/releases/latest)
+          # Quet toan bo danh sach release va lay ban tren cung
+          RELEASE_JSON=$(gh api repos/${{ github.repository }}/releases | jq '.[0]')
           
           VERSION=$(echo "$RELEASE_JSON" | jq -r '.tag_name')
           DATE=$(echo "$RELEASE_JSON" | jq -r '.published_at')
           URL=$(echo "$RELEASE_JSON" | jq -r '.assets[0].browser_download_url')
           SIZE=$(echo "$RELEASE_JSON" | jq -r '.assets[0].size')
 
-          # Kiem tra neu khong tim thay file ipa thi bao loi
+          # Kiem tra neu khong co file ipa
           if [ "$URL" = "null" ] || [ -z "$URL" ]; then
-            echo "Khong tim thay asset file trong release moi nhat!"
+            echo "Loi: Khong tim thay file ipa trong ban release nay!"
             exit 1
           fi
 
-          # Cap nhat thong so vao file apps.json
+          # Cap nhat vao apps.json
           jq --arg ver "$VERSION" \
              --arg date "$DATE" \
              --arg url "$URL" \
@@ -43,5 +43,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add apps.json
-          git commit -m "Auto update apps.json for latest release" || exit 0
+          git commit -m "Auto update apps.json to $VERSION" || exit 0
           git push
