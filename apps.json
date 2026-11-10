@@ -6,13 +6,13 @@
       "name": "TikTok Mod",
       "bundleIdentifier": "com.zhiliaoapp.musically",
       "developerName": "Hieu",
-      "version": "46.7.0",
-      "versionDate": "2026-11-05T00:00:00Z",
-      "downloadURL": "https://github.com/hieu280365-arch/Gtok-2.5/releases/download/v2.5/gtok.2.5.ipa",
+      "version": "v2.6.1",
+      "versionDate": "2026-11-05T11:08:47Z",
+      "downloadURL": "https://github.com/hieu280365-arch/Gtok-2.5/releases/download/v2.6.1/gtok.2.6.1.ipa",
       "localizedDescription": "Bản mod GTok 2.5",
       "iconURL": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
       "tintColor": "000000",
-      "size": 458117000
+      "size": 505731257
     }
   ]
 }
